@@ -18,9 +18,13 @@ Tech
 
 Pure HTML, CSS, and JavaScript. Data is stored locally in the browser via IndexedDB, so progress persists across sessions on the same device/browser.
 
-Donate / Support
+Disclaimer
 
-A lot of time and effort has gone into building this app. If you enjoy it, please consider a donation — any amount is welcome. You can also purchase the full app directly.
+This is a practice/simulation tool for entertainment purposes. No real money is used or won.
+
+Donate
+
+A lot of time and effort has gone into building this app. I really need your financial support — you can deposit crypto on these addresses.
 
 ETH
 0x04a4120e6adb41cce83dcbd7334b678c4e8cae00
@@ -37,10 +41,9 @@ BTC (Legacy)
 BTC (SegWit)
 bc1qlg49w332ww3h3npkhqutppl76de5p8kwuvtkcz
 
-Contact
+Support
+
+To buy the full poker training app, please contact on below.
+
 Email: Xubotz@gmail.com
-Telegram: [T.me/Xubotz](https://T.me/Xubotz)
-
-Disclaimer
-
-This is a practice/simulation tool for entertainment purposes. No real money is used or won.
+Telegram: T.me/Xubotz
