@@ -3020,7 +3020,7 @@ function initBankrollSettingsUI() {
    master switch; "gameSound" gates the actual table effects (deal, check,
    call, bet/raise, fold, win) on top of that. Both default on.
    ========================================================================= */
-const SETTINGS = { sound: false, gameSound: false, autoDeal: true, revealStyles: false, instantMode: true, vibration: false, freerollEnabled: true, tableChat: true };
+const SETTINGS = { sound: true, gameSound: true, autoDeal: true, revealStyles: false, instantMode: false, vibration: true, freerollEnabled: true, tableChat: true };
 
 /* Shared timing helper for every bot/stage/deal delay in the game. Instant
    mode (grinding through volume fast) always wins and collapses the delay
