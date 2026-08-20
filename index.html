@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kenji's Poker Challenge — Features</title>
+<meta name="description" content="A browser-based No-Limit Hold'em practice table with built-in study tools, a whole bankroll-driven life outside the felt, and a handful of breaks between sessions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root{
+    --bg-0:#05070A; --bg-1:#0A0E14; --panel:#12161E; --panel-2:#171C26;
+    --border:#242A36; --border-soft:#1B2029;
+    --felt-1:#1E6E7A; --felt-2:#0E3A44; --felt-3:#082830;
+    --gold:#E7C25C; --gold-dim:#9C813C; --red:#E0102F; --green:#1FA24C; --blue:#1F7BE0;
+    --cream:#F1EDE4; --text:#ECEFF4; --text-dim:#9AA3B4; --text-faint:#5B6474;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; background:var(--bg-0); color:var(--text);
+    font-family:'Inter',sans-serif; line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  a{ color:inherit; }
+  ::selection{ background:rgba(231,194,92,0.28); }
+
+  .wrap{ max-width:1040px; margin:0 auto; padding:0 24px; }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600;
+    letter-spacing:0.16em; text-transform:uppercase; color:var(--gold);
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{
+    content:""; width:16px; height:1px; background:var(--gold); display:inline-block; opacity:0.6;
+  }
+
+  h1,h2,h3{ font-family:'Oswald',sans-serif; font-weight:700; margin:0; letter-spacing:0.2px; }
+
+  /* ---------------- top bar ---------------- */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    background:rgba(5,7,10,0.82); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border-soft);
+  }
+  .topbar-inner{
+    max-width:1040px; margin:0 auto; padding:14px 24px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .brand-chip{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:28px; height:36px; border-radius:4px; background:#fbfaf6; border:1px solid var(--text-dim);
+    font-family:'IBM Plex Mono',monospace; font-weight:800; font-size:13px; color:var(--red);
+  }
+  .brand-name{ font-family:'Oswald',sans-serif; font-weight:600; font-size:15px; letter-spacing:0.4px; text-transform:uppercase; }
+  .brand-name span{ color:var(--gold); }
+
+  /* ---------------- hero ---------------- */
+  .hero{ position:relative; padding:76px 0 64px; overflow:hidden; }
+  .hero-suits{
+    position:absolute; inset:0; pointer-events:none; z-index:0;
+    font-size:220px; color:rgba(255,255,255,0.025); font-family:Georgia,serif;
+  }
+  .hero-suits span{ position:absolute; }
+  .hero-suits .s1{ top:-40px; left:-40px; transform:rotate(-14deg); }
+  .hero-suits .s2{ bottom:-70px; right:-50px; transform:rotate(10deg); color:rgba(224,16,47,0.035); }
+
+  .hero-table{
+    position:relative; z-index:1;
+    border-radius:52% / 34%;
+    background:
+      radial-gradient(120% 160% at 50% 20%, rgba(231,194,92,0.10), transparent 55%),
+      radial-gradient(120% 140% at 50% 100%, var(--felt-3), var(--felt-2) 55%, var(--felt-1) 130%);
+    border:1px solid rgba(231,194,92,0.35);
+    box-shadow: inset 0 0 0 10px rgba(5,7,10,0.55), inset 0 0 60px rgba(0,0,0,0.55), 0 24px 60px rgba(0,0,0,0.5);
+    padding:70px 40px;
+    text-align:center;
+  }
+  .hero-table::before{
+    content:""; position:absolute; inset:22px; border-radius:52% / 34%;
+    border:1px solid rgba(255,255,255,0.10); pointer-events:none;
+  }
+  .hero-eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600;
+    letter-spacing:0.18em; text-transform:uppercase; color:var(--gold);
+    margin-bottom:18px;
+  }
+  .hero h1{
+    font-size:clamp(34px,6vw,58px); color:var(--cream); text-transform:uppercase;
+    letter-spacing:0.5px; line-height:1.04;
+  }
+  .hero p{
+    max-width:560px; margin:20px auto 0; color:var(--text-dim);
+    font-size:16px; line-height:1.7;
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .hero-table{ animation:rise 0.7s ease both; }
+    .hero-eyebrow, .hero h1, .hero p{ animation:fadeup 0.7s ease both; }
+    .hero h1{ animation-delay:0.08s; }
+    .hero p{ animation-delay:0.16s; }
+  }
+  @keyframes rise{ from{ opacity:0; transform:translateY(16px);} to{ opacity:1; transform:translateY(0);} }
+  @keyframes fadeup{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:translateY(0);} }
+
+  /* ---------------- feature sections ---------------- */
+  .section{ padding:64px 0; border-top:1px solid var(--border-soft); }
+  .section-head{ max-width:620px; margin-bottom:36px; }
+  .section-head h2{ font-size:clamp(24px,3.4vw,32px); margin-top:12px; color:var(--text); }
+  .section-head p{ margin:12px 0 0; color:var(--text-dim); font-size:15px; }
+
+  .card-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px;
+  }
+  .card{
+    background:var(--panel); border:1px solid var(--border); border-radius:10px;
+    padding:18px; display:flex; gap:14px; align-items:flex-start;
+    transition:border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+  }
+  .card:hover{ border-color:var(--accent,var(--gold)); background:var(--panel-2); transform:translateY(-2px); }
+  .card-badge{
+    flex-shrink:0; min-width:38px; height:30px; padding:0 6px;
+    display:inline-flex; align-items:center; justify-content:center;
+    border-radius:5px; background:var(--panel-2); border:1px solid var(--accent,var(--gold));
+    color:var(--accent,var(--gold)); font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:11.5px;
+    letter-spacing:0.02em;
+  }
+  .card-title{ font-family:'Oswald',sans-serif; font-weight:600; font-size:15px; color:var(--text); margin-bottom:4px; letter-spacing:0.2px; }
+  .card-text{ font-size:13.5px; color:var(--text-dim); line-height:1.55; }
+
+  .section.table .card{ --accent:var(--gold); }
+  .section.empire .card{ --accent:var(--green); }
+  .section.felt .card{ --accent:var(--blue); }
+
+  /* ---------------- privacy strip ---------------- */
+  .privacy{
+    border-top:1px solid var(--border-soft); border-bottom:1px solid var(--border-soft);
+    background:var(--bg-1); padding:26px 0; text-align:center;
+  }
+  .privacy p{
+    margin:0; color:var(--text-dim); font-size:13.5px; max-width:560px; margin:0 auto;
+  }
+  .privacy strong{ color:var(--cream); font-weight:600; }
+
+  /* ---------------- contact / footer ---------------- */
+  .contact{ padding:72px 0 56px; text-align:center; }
+  .contact-badge{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:28px; height:36px; border-radius:4px; background:#fbfaf6; border:1px solid var(--text-dim);
+    font-family:'IBM Plex Mono',monospace; font-weight:800; font-size:13px; color:var(--red);
+    margin-bottom:20px;
+  }
+  .contact h2{ font-size:clamp(22px,3vw,28px); color:var(--cream); }
+  .contact p{ color:var(--text-dim); font-size:14.5px; margin:10px 0 26px; }
+  .contact-links{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .contact-link{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 18px; border-radius:999px; border:1px solid var(--border);
+    background:var(--panel); color:var(--text); text-decoration:none;
+    font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:500;
+    transition:border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+  .contact-link:hover{ border-color:var(--gold); color:var(--gold); background:var(--panel-2); }
+  .contact-link .dot{ width:6px; height:6px; border-radius:50%; background:var(--gold); flex-shrink:0; }
+
+  footer{ text-align:center; padding:20px 0 40px; color:var(--text-faint); font-size:11.5px; font-family:'IBM Plex Mono',monospace; }
+
+  a:focus-visible, .contact-link:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; border-radius:4px; }
+
+  @media (max-width:560px){
+    .hero-table{ border-radius:26px; padding:52px 22px; }
+    .hero-table::before{ border-radius:20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <span class="brand-chip">K&#9830;</span>
+    <span class="brand-name">Kenji's <span>Poker</span> Challenge</span>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-suits">
+    <span class="s1">&#9824;</span>
+    <span class="s2">&#9830;</span>
+  </div>
+  <div class="wrap">
+    <div class="hero-table">
+      <div class="hero-eyebrow">Eight-Max &middot; No-Limit Hold'em &middot; Runs in your browser</div>
+      <h1>Kenji's Poker Challenge</h1>
+      <p>A practice table that plays for keeps. NLHE, PLO5, or Mixed cash games — and a real WSOP $10,000 Main Event tournament — against seven bots, each with a hidden style. Real study tools built into every hand. And a whole life outside the felt — bankroll, empire, and burnout — that rises or falls with how well you play.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section table">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">At the table</div>
+      <h2>Play sharper, not just longer</h2>
+      <p>The table is a self-contained simulator — deck, hand evaluator, and side-pot math all run in the page, across No-Limit Hold'em, Pot-Limit Omaha, Mixed cash games, and a real tournament. The study tools sit right alongside it, not in a separate app.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-badge">8mx</span>
+        <div>
+          <div class="card-title">Eight-Max Cash Games</div>
+          <div class="card-text">No-Limit Hold'em, Pot-Limit Omaha (5-card), or Mixed — alternating one NLHE hand with one PLO5 hand. Seven bots fill the table, each playing a distinct, fixed style — TAG, LAG, Passive, or Fish — kept hidden until you end the session, or revealed live from Settings.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">WSOP</span>
+        <div>
+          <div class="card-title">The WSOP $10,000 Main Event</div>
+          <div class="card-text">A real tournament, not just a cash table: TAG, Passive, and Pro bots only, a 60,000-chip starting stack, escalating blind levels with a button-posted ante, live standings, and the Main Event's own real payout ladder. Bust out and it's over — no rebuys, no reloads.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">HR</span>
+        <div>
+          <div class="card-title">Hand Reading Trainer</div>
+          <div class="card-text">A street-by-street range funnel for every hand you play — this session, or one you've imported from elsewhere.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">PO</span>
+        <div>
+          <div class="card-title">Pot Odds &amp; Outs</div>
+          <div class="card-text">Live math for whatever spot you're in: which outs actually help you, the price you're being asked to call, and whether calling is profitable.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">RS</span>
+        <div>
+          <div class="card-title">Range Stop</div>
+          <div class="card-text">Check off exactly which starting hands you're willing to play on a 169-hand grid. Anything outside it folds itself, the instant it's dealt.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">H</span>
+        <div>
+          <div class="card-title">Hand History</div>
+          <div class="card-text">Replay any hand from this session, and export the whole thing as a PDF report, a full JSON history, or a PokerStars/HM-format file.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">FR</span>
+        <div>
+          <div class="card-title">Freeroll Collection</div>
+          <div class="card-text">Toggle it on and 1 big blind gets skimmed from every pot of 10bb or more, on top of the house rake, building a running freeroll total shown on Home.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">TBL</span>
+        <div>
+          <div class="card-title">Table Controls</div>
+          <div class="card-text">Dial the bots' skill level, the game type, and the player count without leaving your seat.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section empire">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Your empire</div>
+      <h2>One bankroll — everything hangs off it</h2>
+      <p>Buy-ins, hotel bills, a new house, a bad loan. It's all one number, moving in and out. Grow it into an empire — and a Reputation Score — that means something outside the hand you're playing.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-badge">BK</span>
+        <div>
+          <div class="card-title">Bankroll &amp; P&amp;L</div>
+          <div class="card-text">Every transaction rolls into a career graph and a daily or monthly profit-and-loss view, backed by a full, clearable ledger in Settings.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">TRV</span>
+        <div>
+          <div class="card-title">Travel</div>
+          <div class="card-text">Move between real poker cities, or getaway cities with no table at all — just rest, to bring your Happiness and Energy back up.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">SH</span>
+        <div>
+          <div class="card-title">Shop</div>
+          <div class="card-text">Houses, upgradable businesses, corporations, and investments — stocks, options, commodities, crypto, a launchpad, fixed deposits — plus cars, yachts, jets, and the rest.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">LN&#183;VT</span>
+        <div>
+          <div class="card-title">Loans &amp; Vault</div>
+          <div class="card-text">Borrow against what you already own, or move winnings somewhere the table can't reach.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">REP</span>
+        <div>
+          <div class="card-title">Reputation Score</div>
+          <div class="card-text">The real scoreboard — your houses, businesses, corporations, and bankroll, tracked together as one number.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">GL</span>
+        <div>
+          <div class="card-title">Pace &amp; Goals</div>
+          <div class="card-text">Set a target bankroll and a pace, and the game projects when you'll actually get there.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section felt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Off the felt</div>
+      <h2>The grind wears on — so step away sometimes</h2>
+      <p>A small row of tools that have nothing to do with your bankroll. For the breaks between sessions.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <span class="card-badge">DR</span>
+        <div>
+          <div class="card-title">Doctor</div>
+          <div class="card-text">General symptom info for travelling players. Emergency use only — never a substitute for real medical care.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">NU</span>
+        <div>
+          <div class="card-title">Nutrition</div>
+          <div class="card-text">A vegan/Jain daily nutrition chart, plus a natural travel food guide with swaps for eating well on the road.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">EX</span>
+        <div>
+          <div class="card-title">Exercise</div>
+          <div class="card-text">Desk stretches and movement breaks, built for a body that's been sitting at the table for hours.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">SU</span>
+        <div>
+          <div class="card-title">Sudoku</div>
+          <div class="card-text">A quick, timed puzzle break, with a top-10 best-times board to chase.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">K&#9830;</span>
+        <div>
+          <div class="card-title">Poker Rooms &amp; Tournament Series</div>
+          <div class="card-text">A world directory of real, known poker rooms with their typical stakes, plus the major live tournament series that travel to them.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">&#9822;</span>
+        <div>
+          <div class="card-title">Chess</div>
+          <div class="card-text">A full game against a strong bot, with adjustable time control and search depth.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">&#9733;</span>
+        <div>
+          <div class="card-title">Moon &amp; Nakshatra</div>
+          <div class="card-text">Sidereal moon phase and nakshatra, calculated locally, with the next new and full moon — plus a lookup for any of the 27 nakshatras and when the moon reaches it.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">BR</span>
+        <div>
+          <div class="card-title">Breathing</div>
+          <div class="card-text">Relaxation and heart-rate-calming techniques, including pranayama, plus a guided pacer.</div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="card-badge">DY</span>
+        <div>
+          <div class="card-title">Diary</div>
+          <div class="card-text">A private, password-encrypted notebook, kept separate from everything else in the game.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="privacy">
+  <div class="wrap">
+    <p>Everything above — the deck, the side pots, even the moon math — runs <strong>locally in your browser</strong>. Your bankroll never leaves your device.</p>
+  </div>
+</div>
+
+<section class="contact">
+  <div class="wrap">
+    <span class="contact-badge">K&#9830;</span>
+    <h2>Questions or feedback?</h2>
+    <p>Get in touch any time.</p>
+    <div class="contact-links">
+      <a class="contact-link" href="mailto:xubotz@gmail.com"><span class="dot"></span>xubotz@gmail.com</a>
+      <a class="contact-link" href="https://t.me/Xubotz" target="_blank" rel="noopener"><span class="dot"></span>T.me/Xubotz</a>
+    </div>
+  </div>
+</section>
+
+<footer>Kenji's Poker Challenge &middot; a practice table, and a life outside it</footer>
+
+</body>
+</html>
